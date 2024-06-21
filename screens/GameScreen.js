@@ -1,4 +1,4 @@
-import { View, StyleSheet, Alert } from "react-native";
+import { View, StyleSheet, Alert, Text, FlatList } from "react-native";
 import Title from "../components/ui/Title";
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useEffect } from "react";
@@ -6,6 +6,7 @@ import NumberContainer from "../components/game/NumberContainer";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import Card from "../components/ui/Card";
 import InstructionText from "../components/ui/InstructionText";
+import GuessItem from "../components/game/GuessItem";
 
 function generateRandomBetween(min, max, exclude) {
   const rndNum = Math.floor(Math.random() * (max - min)) + min;
@@ -23,10 +24,11 @@ let maxBoundary = 100;
 export default function GameScreen({ userNumber, onGameOver }) {
   const initialGuess = generateRandomBetween(1, 100, userNumber);
   const [currentGuess, setCurrentGuess] = useState(initialGuess);
+  const [guessRounds, setGuessRounds] = useState([initialGuess]);
 
   useEffect(() => {
     if (currentGuess === userNumber) {
-      onGameOver();
+      onGameOver(guessRounds.length);
     }
   }, [currentGuess, userNumber, onGameOver]);
 
@@ -59,6 +61,7 @@ export default function GameScreen({ userNumber, onGameOver }) {
     );
 
     setCurrentGuess(newRndNumber);
+    setGuessRounds((prevGuessRounds) => [newRndNumber, ...prevGuessRounds]);
   }
 
   return (
@@ -82,6 +85,20 @@ export default function GameScreen({ userNumber, onGameOver }) {
           </View>
         </View>
       </Card>
+      <View style={styles.listContainer}>
+        <FlatList
+          data={guessRounds}
+          renderItem={(itemData) => {
+            return (
+              <GuessItem
+                GuessNumber={guessRounds.length - itemData.index}
+                itemData={itemData.item}
+              />
+            );
+          }}
+          keyExtractor={(item) => item}
+        ></FlatList>
+      </View>
     </View>
   );
 }
@@ -89,6 +106,7 @@ export default function GameScreen({ userNumber, onGameOver }) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
+    marginTop: 50,
     padding: 30,
   },
   buttonsContainer: {
@@ -99,5 +117,9 @@ const styles = StyleSheet.create({
   },
   instructionText: {
     marginBottom: 12,
+  },
+  listContainer: {
+    flex: 1,
+    padding: 16,
   },
 });
