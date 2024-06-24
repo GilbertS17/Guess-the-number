@@ -20,6 +20,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignContent: "center",
+    width: "100%",
     marginTop: 20,
     elevation: 4,
     shadowColor: "black",
